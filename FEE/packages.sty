@@ -1,0 +1,158 @@
+\usepackage[left=21mm,top=21mm,right=21mm,bottom=21mm]{geometry}
+\usepackage[flushmargin,hang,bottom,multiple]{footmisc}
+\usepackage[usestackEOL]{stackengine}
+\usepackage{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{fontawesome5,textcomp}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+
+\usepackage[export]{adjustbox}
+\usepackage{graphicx,array,tabularx}
+\usepackage{float,wrapfig}
+\usepackage[font=footnotesize,labelfont=bf]{caption}
+\usepackage[justification=centering]{subcaption}
+
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{bm}
+\usepackage{mathtools}
+\usepackage{mathabx}
+%\usepackage{physics}
+\usepackage{cancel}
+\usepackage{empheq}
+
+\usepackage{msc}
+\usepackage{booktabs}
+\usepackage{tcolorbox}
+\usepackage{etoolbox}
+
+\usepackage{makecell}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage[numbered,framed]{matlab-prettifier}
+
+
+\usepackage{silence}
+\WarningFilter{hyperref}{Token not allowed in a PDF string}
+
+\usepackage[linktoc=all]{hyperref}
+\usepackage[capitalise]{cleveref}
+\usepackage[nottoc,numbib]{tocbibind}
+\usepackage[square,numbers,sort]{natbib}
+%\usepackage{breakurl}
+\usepackage{placeins}
+\usepackage{colortbl}
+\usepackage{attrib}
+\usepackage{multirow,multicol}
+
+%\usepackage[printwatermark]{xwatermark}
+\usepackage[framemethod=TikZ]{mdframed}
+\mdfsetup{linewidth=1.0pt}
+%\tcbuselibrary{skins,breakable}
+%\usetikzlibrary{shadings,shadows}
+\linespread{1}
+
+\usepackage[siunitx,european]{circuitikz}
+\usepackage{pgfplots}
+\usepgfplotslibrary{fillbetween}
+\usepackage{pgffor}
+
+\hypersetup{
+    colorlinks,
+    linkcolor={black},
+    citecolor={blue!50!black},
+    urlcolor={blue!50!black}
+}
+
+\setlength{\fboxsep}{1.25\fboxsep}
+\newcommand*\widefbox[1]{\fbox{\hspace{2em}#1\hspace{2em}}}
+
+\let\zzzfootnotesize\footnotesize
+\def\newfootnotesize{%
+\zzzfootnotesize
+\abovedisplayskip=0pt
+\belowdisplayskip=\abovedisplayskip
+\abovedisplayshortskip=\abovedisplayskip
+\belowdisplayshortskip=\abovedisplayskip
+}
+\renewcommand\footnotesize{\protect\newfootnotesize}
+
+%//==============================--@--==============================//%
+%                   -> reduzir espaço entre itens <-                  %
+\usepackage{enumitem}
+%\setlist[itemize]{nosep}
+%\setlist[enumerate]{nosep}
+% \setlist[itemize]{itemsep=0.0125em}
+% \setlist[enumerate]{itemsep=0.0125em}
+
+%//==============================--@--==============================//%
+\newcommand{\arcangle}{\mathord{\mathpalette\doarcangle\relax}}
+\newcommand{\doarcangle}[2]{%
+  \hbox{%
+    \sbox0{$#1B$}%
+    \sbox2{$#1<$}%
+    \raisebox{\dimexpr\dp2+(\ht0-\ht2)/2}{%
+      $#1<\mspace{-9mu}\mathrel{)}\mspace{2mu}$%
+    }%
+  }%
+}
+
+\def\delequal{\mathrel{\ensurestackMath{\stackon[1pt]{=}{\scriptstyle\Delta}}}}
+
+\let\originalleft\left
+\let\originalright\right
+\renewcommand{\left}{\mathopen{}\mathclose\bgroup\originalleft}
+\renewcommand{\right}{\aftergroup\egroup\originalright}
+
+%//==============================--@--==============================//%
+\lstset{
+  style              = Matlab-editor,
+  basicstyle         = \footnotesize\mlttfamily,
+  %escapechar         = ",
+  mlshowsectionrules = true,
+  extendedchars=true,
+  literate= {-}{{-}}1 {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1 {ç}{{\c c}}1 {ã}{{\~a}}1 {õ}{{\~o}}1
+  {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1 {Ã}{{\~A}}1,
+}
+
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+            {-2.5ex\@plus -1ex \@minus -.25ex}%
+            {1.25ex \@plus .25ex}%
+            {\normalfont\normalsize\bfseries}}
+\makeatother
+
+%//==============================--@--==============================//%
+\newcounter{theo}[section]\setcounter{theo}{0}
+\renewcommand{\thetheo}{\arabic{theo}}
+
+%\definecolor{tempcolor}{RGB}{113, 110, 97}
+\definecolor{tempcolor}{RGB}{0, 0, 0}
+\newenvironment{theo}[2][]{%
+    \refstepcounter{theo}
+    \ifstrempty{#1}%
+    % if condition (without title)
+    {\mdfsetup{%
+        frametitle={%
+            \tikz[baseline=(current bounding box.east),outer sep=0pt]
+            \node[anchor=east,rectangle,fill=blue!20]
+            {\strut Teorema~\thetheo};}
+        }%
+    % else condition (with title)
+    }{\mdfsetup{%
+        frametitle={%
+            \tikz[baseline=(current bounding box.east),outer sep=0pt]
+            \node[anchor=east,rectangle,fill=white]
+            {\strut #1};}%
+        }%
+    }%
+    % Both conditions
+    \mdfsetup{%
+        innertopmargin=0pt,linecolor=tempcolor,%
+        linewidth=1.25pt,topline=true,%
+        frametitleaboveskip=1.25\dimexpr-\ht\strutbox\relax%
+    }
+ 
+\begin{mdframed}[]\relax\vspace{-0.5em}}{%
+\end{mdframed}}

@@ -1,0 +1,219 @@
+%//==============================--@--==============================//%
+
+A transmissão de energia elétrica é realizada pelo campo eletromagnético criado pela tensão entre os condutores e pela corrente que neles flui.
+
+As linhas são normalmente aéreas, constituidas por condutores de alumímio ou de cobre. Os condutores (sujeitos ao peso e uma força longitudinal) descrevem uma linha designada por \textit{catenária}, a qual para pequenas distancias se aproximada de uma parábola.
+
+A tensão nominal de uma linha determina a sua capacidade de transporte, i.e., quanto maior a tensão, maior é a potência transmitida. As tensões mais elevadas requerem naturalmente um isolamento mais pronunciado, bem como maiores distâncias entre condutores e entre estes e a terra. 
+
+%//==============================--@--==============================//%
+\subsection{Modelos da Linha em Regime Estacionário}
+
+\subsubsection{Modelo exato}
+
+Considerando um troço de uma fase de uma linha com comprimento infinitesimal $dx$, onde $v$ é a tensão fase-neutro e $i$ a corrente por fase, funções do tempo e da distância $x$ medida a partir do emissor, podemos escrever:
+$$
+    \left\{
+    \begin{aligned}
+        v(x) - v(x+dx) &= R\, dx\, i + L\, dx\, \frac{\partial i}{\partial t} \\[8pt]
+        i(x) - i(x+dx) &= G\, dx\, v + C\, dx\, \frac{\partial v}{\partial t}
+    \end{aligned}\right.
+    \quad\implies\quad
+    \left\{
+    \begin{aligned}
+        -\frac{\partial v}{\partial x} &= Ri + L\frac{\partial i}{\partial t} \\[8pt]
+        -\frac{\partial i}{\partial x} &= Gv + C\frac{\partial v}{\partial t}
+    \end{aligned}\right.
+    \quad\implies\quad
+    \left\{
+    \begin{aligned}
+        -\frac{\partial \mathbf{V}}{\partial x} &= (R + j\omega L) \mathbf{I} \\[8pt]
+        -\frac{\partial \mathbf{I}}{\partial x} &= (G + j\omega C) \mathbf{V}
+    \end{aligned}\right.
+$$
+
+% \vspace{-1em}
+% \begin{figure}[H]
+%     \centering
+%     \scalebox{1.0}{%
+%         \begin{circuitikz}
+%             %% Esquema equivalente em pi
+%             \draw (0,0) 
+%                 to[short, *-] (2,0)
+%                 to[generic, l=$\mathbf{B}$] (7,0)
+%                 to[short, -*] (9,0);
+
+%             \draw (2,0) to[generic, l=$\displaystyle \frac{\mathbf{A}-1}{\mathbf{B}}$] (2,-3);
+%             \draw (7,0) to[generic, l_=$\displaystyle \frac{\mathbf{A}-1}{\mathbf{B}}$] (7,-3);
+
+%             \draw (0,-3) to[short, *-*] (9,-3);
+
+%             %% Labels e arrows
+%             \draw[>=stealth,->] (0,-0.25) -- (0,-2.75) node[midway,left] {$\mathbf{V}_e$};
+%             \draw[>=stealth,->] (9,-0.25) -- (9,-2.75) node[midway,right] {$\mathbf{V}_r$};
+%         \end{circuitikz}
+%     }
+%     \caption{Esquema equivalente monofásico de uma linha com parâmetros distribuidos}
+%     \label{fig:linha-esq-monofasico}
+% \end{figure}
+
+\noindent Definem-se a característica (ou impedância) da onda $\mathbf{Z}_0$ ($\Omega$) e constante de propagação $\gamma$ (m$^{-1}$):
+$$
+    \begin{aligned}
+        \mathbf{Z}_0 &= \sqrt{\frac{R + j\omega L}{G + j\omega C}} = \sqrt{\frac{R + jX}{G + jB}} \\
+        \gamma &= \sqrt{(R + j\omega L)(G + j\omega C)} = \sqrt{(R + jX)(G + jB)}
+    \end{aligned}
+$$
+Para obtermos as soluções definimos as seguintes EDOs, após derivar e substituir:
+$$
+    \left\{
+    \begin{aligned}
+        \frac{d^2 \mathbf{V}}{dx^2} &= (R + j\omega L)(G + j\omega C) \mathbf{V} \\[6pt]
+        \frac{d^2 \mathbf{I}}{dx^2} &= (R + j\omega L)(G + j\omega C) \mathbf{I}
+    \end{aligned}\right.
+    \quad\iff\quad
+    \left\{
+    \begin{aligned}
+        \frac{d^2 \mathbf{V}}{dx^2} &= \gamma^2\, \mathbf{V} \\[6pt]
+        \frac{d^2 \mathbf{I}}{dx^2} &= \gamma^2\, \mathbf{I}
+    \end{aligned}\right.
+    \quad\implies\quad
+    \boxed{%
+    \begin{aligned}
+        \mathbf{V} &= \mathbf{V}_e \cosh(\gamma x) - \mathbf{Z}_0 \mathbf{I}_e \sinh(\gamma x) \\[4pt]
+        \mathbf{I} &= -\frac{\mathbf{V}_e}{\mathbf{Z}_0} \sinh(\gamma x) + \mathbf{I}_e \cosh{\gamma x}
+    \end{aligned}}
+$$
+As soluções obtidas são para uma distância qualquer entre o emissor e o recetor. Interessa o caso específico no extremo do recetor ($\mathbf{V}_r, \mathbf{I}_r$) em que $x = d$. Sob a forma matricial temos:
+$$
+    \begin{bmatrix}
+        \mathbf{V}_r \\[6pt]
+        \mathbf{I}_r
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        \cosh(\gamma d) & -\mathbf{Z}_0 \sinh(\gamma d) \\[6pt]
+        -1/\mathbf{Z}_0 \cdot \sinh(\gamma d) & \cosh(\gamma d)
+    \end{bmatrix}
+    \begin{bmatrix}
+        \mathbf{V}_e \\[6pt]
+        \mathbf{I}_e
+    \end{bmatrix}
+    \iff 
+    \begin{bmatrix}
+        \mathbf{V}_e \\[6pt]
+        \mathbf{I}_e
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        \cosh(\gamma d) & \mathbf{Z}_0 \sinh(\gamma d) \\[6pt]
+        1/\mathbf{Z}_0 \cdot \sinh(\gamma d) & \cosh(\gamma d)
+    \end{bmatrix}
+    \begin{bmatrix}
+        \mathbf{V}_r \\[6pt]
+        \mathbf{I}_r
+    \end{bmatrix}
+$$
+Podemos apresentar a equação sob a forma:
+$$
+    \begin{bmatrix}
+        \mathbf{V}_e \\[6pt]
+        \mathbf{I}_e
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        \mathbf{A} & \mathbf{B} \\[6pt]
+        \mathbf{C} & \mathbf{D}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \mathbf{V}_r \\[6pt]
+        \mathbf{I}_r
+    \end{bmatrix}
+$$
+em que os parâmetros $\mathbf{A}$, $\mathbf{B}$, $\mathbf{C}$ e $\mathbf{D}$ são dados por:
+$$
+    \begin{aligned}
+        \mathbf{A} &= \mathbf{D} = \cosh(\gamma d) = \cosh(\sqrt{\mathbf{Z}_L \mathbf{Y}_T}) \\
+        \mathbf{B} &= \mathbf{Z}_0 \sinh(\gamma d) = \frac{\mathbf{Z}_0 \sinh(\sqrt{\mathbf{Z}_L \mathbf{Y}_T})}{\sqrt{\mathbf{Z}_L \mathbf{Y}_T}} \\
+        \mathbf{C} &= \frac{\mathbf{Z}_0}{\sinh{\gamma d}} = \frac{\mathbf{Y}_T \sinh(\sqrt{\mathbf{Z}_L \mathbf{Y}_T})}{\sqrt{\mathbf{Z}_L \mathbf{Y}_T}}
+    \end{aligned}
+$$
+onde $\mathbf{Z}_L = (R + j\omega L)d$ e $\mathbf{Y}_T = (G + j\omega C)d$ são a impedância longitudinal e admitância transversal totais, respetivamente.
+
+%//==============================--@--==============================//%
+\subsubsection{Esquema em $\pmb{\pi}$ exato}
+
+\begin{figure}[H]
+    \centering
+    \scalebox{1.0}{%
+        \begin{circuitikz}
+            %% Esquema equivalente em pi
+            \draw (0,0) 
+                to[short, *-] (2,0)
+                to[generic, l=$\mathbf{B}$] (7,0)
+                to[short, -*] (9,0);
+
+            \draw (2,0) to[generic, l=$\displaystyle \frac{\mathbf{A}-1}{\mathbf{B}}$] (2,-3);
+            \draw (7,0) to[generic, l_=$\displaystyle \frac{\mathbf{A}-1}{\mathbf{B}}$] (7,-3);
+
+            \draw (0,-3) to[short, *-*] (9,-3);
+
+            %% Labels e arrows
+            \draw[>=stealth,->] (0,-0.25) -- (0,-2.75) node[midway,left] {$\mathbf{V}_e$};
+            \draw[>=stealth,->] (9,-0.25) -- (9,-2.75) node[midway,right] {$\mathbf{V}_r$};
+        \end{circuitikz}
+    }
+    \caption{}
+    \label{fig:linha-transmissao-esq-exato}
+\end{figure}
+
+%//==============================--@--==============================//%
+\subsubsection{Esquema em $\pmb{\pi}$ nominal}
+
+\begin{figure}[H]
+    \centering
+    \scalebox{1.0}{%
+        \begin{circuitikz}
+            %% Esquema equivalente em pi
+            \draw (0,0) 
+                to[short, *-] (2,0)
+                to[generic, l=$\mathbf{Z}_L$] (7,0)
+                to[short, -*] (9,0);
+
+            \draw (2,0) to[generic, l=$\displaystyle \frac{\mathbf{Y}_T}{2}$] (2,-3);
+            \draw (7,0) to[generic, l_=$\displaystyle \frac{\mathbf{Y}_T}{2}$] (7,-3);
+
+            \draw (0,-3) to[short, *-*] (9,-3);
+
+            %% Labels e arrows
+            \draw[>=stealth,->] (0,-0.25) -- (0,-2.75) node[midway,left] {$\mathbf{V}_e$};
+            \draw[>=stealth,->] (9,-0.25) -- (9,-2.75) node[midway,right] {$\mathbf{V}_r$};
+        \end{circuitikz}
+    }
+    \caption{}
+    \label{fig:linha-transmissao-esq-nominal}
+\end{figure}
+
+
+%//==============================--@--==============================//%
+\newpage
+\subsection{Capacidade de Transporte}
+
+\subsubsection{Limite Térmico}
+\subsubsection{Limite de Estabilidade Estática}
+\subsubsection{Limite de Estabilidade da Tensão}
+
+%//==============================--@--==============================//%
+\subsection{Parâmetros da Linha}
+
+As linhas elétricas são caracterizadas pela impedância longitudinal e admitância transversal, geralmente expressas em $\Omega$/km e S/km, respetivamente. Os modelos comuns consideram a resistência e a reactância longitudinais; a suscetância transversal é considerada em linhas longas, enquanto a condutância transversal é muitas vezes ignorada. 
+
+\begin{mdframed}
+    Ao contrário dos circuitos de parâmetros concentrados, estas linhas têm parâmetros distribuídos ao longo do seu comprimento, o que resulta num tempo de propagação não nulo para o campo eletromagnético, que viaja à velocidade da luz:
+    $$
+        v = \frac{1}{\sqrt{LC}} = \frac{1}{\sqrt{\mu \varepsilon}} = \frac{1}{\sqrt{\mu_r \varepsilon_r}} \cdot c_0
+    $$
+    onde $c_0 = 300'000$ km/s é a velocidade da luz no vácuo.
+\end{mdframed}
+
+%//==============================--@--==============================//%

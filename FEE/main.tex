@@ -1,0 +1,122 @@
+\author{João Gonçalves}
+\newcommand{\authorr}{Teresa Nogueira}
+\newcommand{\studentID}{99995}
+\newcommand{\studentIDD}{100029}
+\newcommand{\supervisorone}{}
+\newcommand{\supervisortwo}{}
+\newcommand{\department}{Engenharia Eletrotécnica e de Computadores}
+\newcommand{\exam}{Fundamentos de Energia Elétrica}
+
+\title{%
+Fundamentos de Energia Elétrica\\
+Semana \#3 \& \#4\\
+\large (Alguns tópicos \href{https://github.com/Kons-5}{\raisebox{0 em}{\large \faGithub}})}
+\date{Setembro 2023}
+
+\documentclass[a4paper, 10pt]{article}
+\usepackage{packages}
+
+%----------------------------------TITLE PAGE -----------------------------------
+\makeatletter
+\def\maketitle{
+  \begin{center}\leavevmode
+        \normalfont
+        \includegraphics[width=0.5\columnwidth]{img/title-page/IST.pdf}
+        \vskip 0.05cm   
+        \textsc{\large \department}\\
+        \vskip 0.5cm
+        \rule{0.95\linewidth}{0.2 mm} %\\
+        {\large \exam}\\[0.5 cm]
+        {\huge \bfseries \@title \par} 
+        \vspace{1em}
+        \begin{tikzpicture}
+            \node[inner sep=6.66pt] (image) at (0,0) {
+                \includegraphics[scale=0.4]{img/title-page/000.jpg}
+            };
+            \draw[dashed] (image.south west) rectangle (image.north east);
+        \end{tikzpicture}
+        \vspace{-0.5em}
+        \captionof*{figure}{\color{gray}Imagem: \textit{Máquina síncrona}}
+        \vspace{0.5cm}
+        \rule{0.95\linewidth}{0.2 mm} \\[0.75 cm]
+        %\fontsize{9pt}{11pt}\selectfont
+        \begin{minipage}[t]{\textwidth}
+            \begin{flushleft} \large
+                \emph{Autores:}\\
+                \normalsize \textbf{\@author} : \studentID \\
+                \fontsize{9pt}{11pt}\selectfont $\hookrightarrow$ jrazevedogoncalves@tecnico.ulisboa.pt \\
+                \normalsize \textbf{\authorr} : \studentIDD \\
+                \fontsize{9pt}{11pt}\selectfont $\hookrightarrow$ maria.teresa.ramos.nogueira@tecnico.ulisboa.pt
+            \end{flushleft}
+	   \end{minipage}%
+    \vfill
+	{\Large \@date\par}
+   \end{center}
+   %\vfill
+   %\null
+   \cleardoublepage
+  }
+\makeatother
+%-------------------------------- ENDTITLE PAGE ----------------------------------
+
+%---------------------------------- HEADER ------------------------------------
+%\fancyhf{}
+\renewcommand{\headrulewidth}{1pt}% Header rule width
+\renewcommand{\footrulewidth}{0pt}% No footer rule
+\setlength\headheight{26pt} 
+\fancyhead[L]{\raisebox{0.1\height}[0pt][0pt]{\textit{Fundamentos de Energia Elétrica}}}
+\fancyhead[R]{\raisebox{0.1\height}[0pt][0pt]{2023/2024}}
+%-------------------------------- END HEADER ----------------------------------
+
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}
+% \setcounter{secnumdepth}{-2}
+
+\renewcommand{\figurename}{Fig.}
+\renewcommand{\tablename}{Tab.}
+\renewcommand{\contentsname}{Índice}
+\settocbibname{\raisebox{0em}{Referências}}
+\setlength{\bibsep}{0.15em}%reduzir espaço entre refs.
+
+\pgfplotsset{compat=1.18}
+
+\begin{document}
+    \sloppy
+    %% title page
+    \pagenumbering{gobble}
+    \maketitle
+    
+    %% toc
+    \setcounter{tocdepth}{3}
+    \tableofcontents
+    \setcounter{tocdepth}{4}
+    
+    %% body
+    \newpage
+    \pagestyle{fancy}
+    \pagenumbering{arabic}
+    
+    \setlength{\abovedisplayskip}{4pt}
+    \setlength{\belowdisplayskip}{4pt}
+
+    \clearpage
+    \section{Conceitos Básicos}%
+        \input{src/1/conceitos}
+
+    \clearpage
+    \section{Transformador e Máquina Assíncrona}%
+        \input{src/2/transformer}
+        \input{src/2/async-machine}
+
+    \clearpage
+    \section{Máquina Síncrona}%
+        \input{src/3/sync-machine}
+
+    \clearpage
+    \section{Linha Elétrica de Energia}%
+        \input{src/4/linhas}
+
+    \clearpage \pagestyle{empty} \setcounter{secnumdepth}{-2}
+    \bibliographystyle{unsrtnat} \nocite{*}
+    \bibliography{refs}
+\end{document}%
