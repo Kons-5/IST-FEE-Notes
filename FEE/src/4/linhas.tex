@@ -1,3 +1,5 @@
+\setcounter{figure}{29}
+
 %//==============================--@--==============================//%
 
 A transmissão de energia elétrica é realizada pelo campo eletromagnético criado pela tensão entre os condutores e pela corrente que neles flui.
@@ -9,7 +11,7 @@ A tensão nominal de uma linha determina a sua capacidade de transporte, i.e., q
 %//==============================--@--==============================//%
 \subsection{Modelos da Linha em Regime Estacionário}
 
-\subsubsection{Modelo exato}
+\subsubsection{Modelo Exato}
 
 Considerando um troço de uma fase de uma linha com comprimento infinitesimal $dx$, onde $v$ é a tensão fase-neutro e $i$ a corrente por fase, funções do tempo e da distância $x$ medida a partir do emissor, podemos escrever:
 $$
@@ -61,9 +63,11 @@ $$
 $$
     \begin{aligned}
         \mathbf{Z}_0 &= \sqrt{\frac{R + j\omega L}{G + j\omega C}} = \sqrt{\frac{R + jX}{G + jB}} \\
-        \gamma &= \sqrt{(R + j\omega L)(G + j\omega C)} = \sqrt{(R + jX)(G + jB)}
+        \gamma &= \sqrt{(R + j\omega L)(G + j\omega C)} = \sqrt{(R + jX)(G + jB)} = \alpha + j\beta
     \end{aligned}
 $$
+onde $\alpha$ é o fator de atenuação e $\beta$ o fator de desfasagem. 
+
 Para obtermos as soluções definimos as seguintes EDOs, após derivar e substituir:
 $$
     \left\{
@@ -133,16 +137,28 @@ $$
 em que os parâmetros $\mathbf{A}$, $\mathbf{B}$, $\mathbf{C}$ e $\mathbf{D}$ são dados por:
 $$
     \begin{aligned}
-        \mathbf{A} &= \mathbf{D} = \cosh(\gamma d) = \cosh(\sqrt{\mathbf{Z}_L \mathbf{Y}_T}) \\
-        \mathbf{B} &= \mathbf{Z}_0 \sinh(\gamma d) = \frac{\mathbf{Z}_0 \sinh(\sqrt{\mathbf{Z}_L \mathbf{Y}_T})}{\sqrt{\mathbf{Z}_L \mathbf{Y}_T}} \\
-        \mathbf{C} &= \frac{\mathbf{Z}_0}{\sinh{\gamma d}} = \frac{\mathbf{Y}_T \sinh(\sqrt{\mathbf{Z}_L \mathbf{Y}_T})}{\sqrt{\mathbf{Z}_L \mathbf{Y}_T}}
+        \mathbf{A} &= \mathbf{D} = \cosh(\gamma d) = \cosh(\sqrt{\mathbf{Z}_L \mathbf{Y}_T}) \\[1pt]
+        \mathbf{B} &= \mathbf{Z}_0 \sinh(\gamma d) = \frac{\mathbf{Z}_0 \sinh(\sqrt{\mathbf{Z}_L \mathbf{Y}_T})}{\sqrt{\mathbf{Z}_L \mathbf{Y}_T}} \\[1pt]
+        \mathbf{C} &= \frac{\sinh(\gamma d)}{\mathbf{Z}_0} = \frac{\mathbf{Y}_T \sinh(\sqrt{\mathbf{Z}_L \mathbf{Y}_T})}{\sqrt{\mathbf{Z}_L \mathbf{Y}_T}}
     \end{aligned}
 $$
 onde $\mathbf{Z}_L = (R + j\omega L)d$ e $\mathbf{Y}_T = (G + j\omega C)d$ são a impedância longitudinal e admitância transversal totais, respetivamente.
 
-%//==============================--@--==============================//%
-\subsubsection{Esquema em $\pmb{\pi}$ exato}
+\begin{mdframed}
+    Para uma \underline{linha sem perdas}, a impedância longitudinal e a admitância transversal são imaginários puros, logo, a impedância característica e a constante de propagação são real e imaginária pura, respetivamente:
+    $$
+        \mathbf{Z_0} = \sqrt{\dfrac{L}{C}}
+        \qquad\quad
+        \gamma = j\omega\sqrt{LC} = j\beta, \quad \text{onde $\beta$ é a constante de fase}
+    $$
+\end{mdframed}
 
+%//==============================--@--==============================//%
+\subsubsection{Esquema em $\pmb{\pi}$ Exato}
+
+Para a modelação da linha numa rede interligada é conveniente utilizarmos um esquema equivalente em $\pi$ como se apresenta \hyperref[fig:linha-transmissao-esq-exato]{em baixo}. O ramo longitudinal possui uma impedância $\mathbf{B}$ e os dois ramos transversais uma admitância $(\mathbf{A}-1)/\mathbf{B}$.
+
+\vspace{-1.25em}
 \begin{figure}[H]
     \centering
     \scalebox{1.0}{%
@@ -163,13 +179,32 @@ onde $\mathbf{Z}_L = (R + j\omega L)d$ e $\mathbf{Y}_T = (G + j\omega C)d$ são 
             \draw[>=stealth,->] (9,-0.25) -- (9,-2.75) node[midway,right] {$\mathbf{V}_r$};
         \end{circuitikz}
     }
-    \caption{}
+    \caption{Esquema equivalente em $\pi$ exato}
     \label{fig:linha-transmissao-esq-exato}
 \end{figure}
 
 %//==============================--@--==============================//%
-\subsubsection{Esquema em $\pmb{\pi}$ nominal}
+\subsubsection{Esquema em $\pmb{\pi}$ Nominal (linhas médias)}
 
+Os valores da impedância longitudinal e admitâncias transversais no esquema em $\pi$ são, respetivamente:
+$$
+    \begin{aligned}
+        \mathbf{B} &= \mathbf{Z}_0 \sinh(\gamma d) \\[1pt]
+        \frac{\mathbf{A}-1}{\mathbf{B}} &= \frac{\cosh(\gamma d)-1}{\mathbf{Z}_0 \sinh(\gamma d)} = \frac{1}{\mathbf{Z}_0} \tanh\left(\frac{\gamma d}{2}\right)
+    \end{aligned}
+$$
+Para linhas em que $d \le 250\;$km, verifica-se que $\gamma d \ll 1$, o que implica que $\sinh(\gamma d) \approx \gamma d$ e $\tanh(\gamma d/2) \approx \gamma d/2$.
+
+Esta simplificação resulta em:
+$$
+    \begin{aligned}
+        \mathbf{B} &= \mathbf{Z}_0\, \gamma d = \sqrt{\frac{\mathbf{Z}_L}{\mathbf{Y}_T}}\, \sqrt{\mathbf{Z}_L \mathbf{Y}_T} = \mathbf{Z}_L \\[1pt]
+        \frac{\mathbf{A}-1}{\mathbf{B}} &= \frac{1}{\mathbf{Z}_0} \frac{\gamma d}{2} = \sqrt{\frac{\mathbf{Y}_T}{\mathbf{Z}_L}}\, \frac{\sqrt{\mathbf{Z}_L \mathbf{Y}_T}}{2} = \frac{\mathbf{Y}_T}{2}
+    \end{aligned}% Hallo :3 minminnho
+$$
+o que se traduz na simplificação do esquema equivalente apresentado na \hyperref[fig:linha-transmissao-esq-nominal]{Fig. 31}.
+
+\vspace{-0.5em}
 \begin{figure}[H]
     \centering
     \scalebox{1.0}{%
@@ -190,20 +225,345 @@ onde $\mathbf{Z}_L = (R + j\omega L)d$ e $\mathbf{Y}_T = (G + j\omega C)d$ são 
             \draw[>=stealth,->] (9,-0.25) -- (9,-2.75) node[midway,right] {$\mathbf{V}_r$};
         \end{circuitikz}
     }
-    \caption{}
+    \caption{Esquema equivalente em $\pi$ nominal}
     \label{fig:linha-transmissao-esq-nominal}
 \end{figure}
 
+\vspace{-0.5em}
+\noindent As equações do esquema em $\pi$ nominal escrevem-se:
+$$
+    \begin{bmatrix}
+        \mathbf{V}_r \\[10pt]
+        \mathbf{I}_r
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        1+\dfrac{\mathbf{Z}_L\mathbf{Y}_T}{2} & -\mathbf{Z}_L \\[10pt]
+        -\mathbf{Y}_T \left(1+\dfrac{\mathbf{Z}_L\mathbf{Y}_T}{4}\right) & 1+ \dfrac{\mathbf{Z}_L\mathbf{Y}_T}{2}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \mathbf{V}_e \\[10pt]
+        \mathbf{I}_e
+    \end{bmatrix}
+    \iff
+    \begin{bmatrix}
+        \mathbf{V}_e \\[10pt]
+        \mathbf{I}_e
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        1+\dfrac{\mathbf{Z}_L\mathbf{Y}_T}{2} & \mathbf{Z}_L \\[10pt]
+        \mathbf{Y}_T \left(1+\dfrac{\mathbf{Z}_L\mathbf{Y}_T}{4}\right) & 1+ \dfrac{\mathbf{Z}_L\mathbf{Y}_T}{2}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \mathbf{V}_r \\[10pt]
+        \mathbf{I}_r
+    \end{bmatrix}
+$$
+%//==============================--@--==============================//%
+\subsubsection{Nota sobre Funções Hiperbólicas}
 
+As funções hiperbólicas têm uma relação intima com as funções trigonométricas, como revelam as definições:
+
+\vfill
+\begin{center}
+    \setlength{\tabcolsep}{0.75cm}
+    \begin{tabular}{c|c|c}
+         $\cosh(u) = \dfrac{e^{u} + e^{-u}}{2}$ & $\sinh(v) = \dfrac{e^{v}-e^{-v}}{2}$ & $\tanh(w) = \dfrac{\sinh(w)}{\cosh(w)} = \dfrac{e^{w}-e^{-w}}{e^{w} + e^{-w}}$ \\[12pt]
+         $\cos(u) = \dfrac{e^{ju} + e^{-ju}}{2}$ & $\sin(v) = \dfrac{e^{jv}-e^{-jv}}{2j}$ & $\tan(w) = \dfrac{\sin(w)}{\cos(w)} = \dfrac{e^{jw}-e^{-jw}}{j(e^{jw} + e^{-jw})}$ \\
+         & & \\
+         \bottomrule
+         & & \\
+         $\therefore \cos(u) = \cosh(ju)$ & $\therefore j\sin(v) = \sinh(jv)$ & $\therefore j\tan(w) = \tanh(jw)$
+    \end{tabular}  
+\end{center}
+
+%//==============================--@--==============================//%
+\clearpage
+\subsection{Linha Terminada pela Impedância de Onda}
+
+%//==============================--@--==============================//%
+\subsubsection{Linha com Perdas}
+
+Se a linha for terminada por $\mathbf{Z}_0$, a relação entre a tensão e a corrente ao longo da linha simplifica-se consideravelmente. Temos, neste caso, $\mathbf{V}_r = \mathbf{Z}_0\, \mathbf{I}_r$, o que leva à reconstrução da relação:
+$$
+    \begin{aligned}
+        \mathbf{V}_e &= (\cosh(\gamma d) + \sinh(\gamma d))\, \mathbf{V}_r = e^{\gamma d}\, \mathbf{V}_r\\
+        \mathbf{I}_e &= (\sinh(\gamma d) + \cosh(\gamma d))\, \mathbf{I}_r = e^{\gamma d}\, \mathbf{I}_r
+    \end{aligned}
+$$
+Dividindo as expressões anteriores, descobrimos a relação:
+$$
+    \frac{\mathbf{V}_e}{\mathbf{I}_e} = \frac{\mathbf{V}_r}{\mathbf{I}_r} = \mathbf{Z}_0
+$$
+Este resultado implica que na emissão a linha apresenta, tal como na receção, a impedância de onda. Verifica-se esta relação para qualquer outro ponto genérico da mesma.
+
+% \vspace{}
+\noindent\begin{minipage}[c]{0.45\linewidth}
+    \begin{figure}[H]
+        \centering
+        \scalebox{0.65}{%
+            \begin{tikzpicture}[>=stealth]
+                \coordinate (O) at (0,0);
+        
+                \draw[thick,->] (O) -- (350:5cm) node[above=3mm,left] {$\mathbf{V}_e$};
+                \draw[thick,->] (O) -- (10:2.6cm) node[above,left=1.5mm,yshift=2mm] {$\mathbf{I}_e$};
+                \draw[dashed] (O) circle(5cm);
+        
+                \draw[thick,->] (O) -- (290:5cm) node[above=3mm,right,xshift=-0.5mm,yshift=2mm] {$\mathbf{V}_r$};
+                \draw[thick,->] (O) -- (310:2.6cm) node[above,right=1.5mm,xshift=-0.75mm,yshift=-0.75mm] {$\mathbf{I}_r$};
+                \draw[dashed] (O) circle(2.6cm);
+    
+                \draw[<->,thin] (290:1.5cm) arc (290:350:1.5cm)
+                node[midway,above,xshift=4mm,yshift=-2mm] {$\beta d$};
+            \end{tikzpicture}
+        }
+        \caption{Tensão e corrente numa linha terminada por $\mathbf{Z}_0$}
+    \end{figure}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.5\linewidth}
+    A constante de propagação é um número complexo, i.e., $\gamma = \alpha + j\beta$. Substituindo, vem que
+    $$
+        \frac{V_r}{V_e} = \frac{I_r}{I_e} = e^{-\alpha d}
+    $$
+    $$
+        \arg(\mathbf{V}_e)-\arg(\mathbf{V}_r) = \arg(\mathbf{I}_e) - \arg(\mathbf{I}_r) = \beta d
+    $$
+    Conclui-se que a tensão e a corrente ao longo da linha se vão atenuando da emissão para a receção com o fator de atenuação $\alpha$, ao mesmo tempo que sofrem uma rotação no sentido negativo, com o fator de desfasagem $\beta$. A impedância de onda é tipicamente capacitiva (argumento entre $0^{\circ}$ e $-15^{\circ}$), pelo que a corrente está avançada em relação à tensão. A atenuação e a rotação variam linearmente com o comprimento da linha (na representação ao lado a atenuação não é muito acentuada).
+\end{minipage}
+
+
+%//==============================--@--==============================//%
+\subsubsection{Linha sem Perdas}
+
+Como já mencionado acima, admitindo uma linha sem perdas, temos uma impedância de onda resistiva pura e uma constante de propagação imaginária pura (sem nulo o fator de atenuação):
+$$
+    \mathbf{Z_0} = \sqrt{\dfrac{L}{C}}
+    \qquad\quad
+    \gamma = j\omega\sqrt{LC} = j\beta,\; \text{ em que $\beta = \omega \sqrt{LC}$}
+$$
+A velocidade da onda eletromagnética ao longo da linha pode ser dada por $\nu = 1/\sqrt{LC}$, de que resulta:
+$$
+    \beta = \frac{\omega}{\nu}
+$$
+O comprimento de onda $\lambda$ é dado por pela relação:
+$$
+    \lambda = \frac{\nu}{f} = 2\pi \frac{\nu}{\omega}
+$$
+A desfasagem entre as tensões na emissão e na receção podem então escrever-se como:
+$$
+    \beta d = 2\pi \frac{d}{\lambda}
+$$
+
+\vspace{0.25em}\hrule\vspace{0.5em}
+
+\noindent Uma vez que $\alpha = 0$, as amplitude da tensão e da corrente ao longo da linha (que estão em fase) mantêm-se constantes, o que resulta em:
+$$
+    \frac{V}{I} = Z_0
+$$
+Supondo que trabalhamos à tensão nominal, a linha transporta a \textit{potência natural} $P_n$:
+$$
+    P_n = \frac{V^2_n}{Z_0}
+$$
+Nestas condições, $\omega C d V^2 = \omega L d I^2$, i.e., ``\textit{a potência reativa gerada pela capacitância da linha iguala a absorvida pela respetiva reatância}''\cite{paiva2005}. Caso a carga seja superior a $Z_0$, a linha gera potência reativa e a tensão sobe ao longo da linha, $V_r > V_e$. O reciproco ocorre para cargas inferiores a $Z_0$ (a linha consome reativa, e $V_r < V_e$).
 %//==============================--@--==============================//%
 \newpage
 \subsection{Capacidade de Transporte}
 
 \subsubsection{Limite Térmico}
+
+ Uma linha elétrica tem a sua capacidade de transporte influenciada pelo aumento da temperatura. Este aumento é causado pelas perdas devido ao efeito de Joule, que ocorrem com a passagem da corrente elétrica. A temperatura sobe até que a taxa de dissipação de calor equilibre a potência de perdas, tendo o seu valor máximo de ser limitado.
+ 
+\begin{itemize}
+    \item O \textbf{limite térmico} determina a capacidade de transporte em cabos subterrâneos e linhas de curta ou média distância (inferior a 150-200 km).
+    
+    \item Os cabos subterrâneos são isolados e o seu isolamento pode ser danificado se a temperatura ultrapassar um valor máximo entre 90 e 120°C.
+    
+    \item Os condutores das linhas aéreas expandem-se com o aumento da temperatura. Tal altera a sua trajetória (a catenária dilata), reduzindo a distância a objetos próximos. 
+    
+    \item O limite térmico destas linhas varia com a temperatura exterior. Por exemplo, a 35°C, é aproximadamente $2/3$ do valor a 15°C. Devido a esta característica, a capacidade de transporte no verão é notavelmente menor do que no inverno.
+\end{itemize}
+
 \subsubsection{Limite de Estabilidade Estática}
-\subsubsection{Limite de Estabilidade da Tensão}
+
+\noindent Num sistema com dois barramentos, ambos com geração e carga, ligados por uma linha com geradores que mantêm estáveis as amplitudes das tensões nos barramentos, ignorando a admitância transversal da linha, a corrente no sentido de $1 \rightarrow 2$ e a potência complexa na emissão são:
+
+\vspace{-0.25em}
+\hspace{-1.5em}\begin{minipage}[c]{0.5\linewidth}
+    \begin{figure}[H]
+        \centering
+        \begin{circuitikz}[scale=1.2]
+            \draw (7.5,12.7) to[sinusoidal voltage source, sources/symbol/rotate=auto] (7.5,12);
+            \draw [thick, -](6.5,11.5) to[short] (8.5,11.5);
+            \draw [thick, >=stealth,->](7.5,12) to[short] (7.5,11.5);
+            \draw [>=stealth,->](7,11.5) to[short] (7,10);
+             \node[yshift=-1mm,xshift=2mm,font=\normalsize] at (6.1,11.6) {$\mathbf{V}_1$};
+            
+            \draw (11,12.7) to[sinusoidal voltage source, sources/symbol/rotate=auto ] (11,12);
+            \draw [thick, -](10,11.5) to[short] (12,11.5);
+            \draw [thick, >=stealth,->](11,12) to[short] (11,11.5);
+            \draw [>=stealth,->](11.5,11.5) to[short] (11.5,10);
+             \node[yshift=-1mm,xshift=2mm,font=\normalsize] at (12,11.6) {$\mathbf{V}_2$};
+            
+            \draw [-](8,11.5) to[short] (8,11);
+            \draw [-](8,11) to[short] (10.5,11);
+            \draw [>=stealth,->](9.25,11) to[short] (9.3,11) node[below, font=\normalsize] {$\mathbf{I}$};
+            \draw [-](10.5,11.5) to[short] (10.5,11);
+        \end{circuitikz}
+    \end{figure} 
+\end{minipage}
+\begin{minipage}[c]{0.45\linewidth}
+    $$
+    \mathbf{I} = \dfrac{\mathbf{V_1} - \mathbf{V_2}}{R_L + j X_L}\qquad
+    \mathbf{S_{12}} = \mathbf{V_1 I^*} = \dfrac{V_1^2 - V_1 V_2 e^{j \theta}}{R_L - j X_L}
+    $$
+
+    \vspace{1em}
+    onde $R_L$ e $X_L$ são a resistência e a reatância da linha e $\theta$ a desfasagem entre $V_1$ e $V_2$.
+\end{minipage}
+
+\vspace{0.75em}
+\noindent A partes reais e imaginária da potência complexa fornecem a potência ativa e reativa:
+
+$$
+    \begin{aligned}
+        P_{12} &= V_1^2\dfrac{R_L}{R^2_L + X^2_L} + V_1V_2\dfrac{X_L\sin(\theta) - R_L \cos(\theta)}{R^2_L + X^2_L}\\
+        Q_{12} &= V_1^2\dfrac{X_L}{R^2_L + X^2_L} + V_1V_2\dfrac{X_L\cos(\theta)+ R_L \sin(\theta)}{R^2_L + X^2_L}\\   
+    \end{aligned}
+$$
+
+\noindent Considerando que a potência ativa transmitida pela linha, convencionalmente positiva no sentido $1 \rightarrow 2$, é o valor médio das potência na emissão e na receção (parte real da potência complexa negada):
+$$
+    P = \dfrac{P_{12} - P_{21}}{2} = \dfrac{R_L}{R^2_L + X^2_L}\frac{V_1^2 - V_2^2}{2} + \frac{X_L}{R^2_L + X^2_L}V_1 V_2 \sin(\theta)
+$$
+\noindent Admitindo que $V_1 = V_2 = V_n$:
+$$
+    P = \frac{X_L}{R^2_L + X^2_L}V_n^2 \sin(\theta) = P_\text{máx}\sin(\theta)\;\rightarrow\; \boxed{P_\text{máx} = \frac{X_L}{R^2_L + X^2_L}V_n^2 \simeq \frac{V_n^2}{X_L}}
+$$
+
+\begin{mdframed}
+    \begin{enumerate}
+        \item A capacidade de transporte da linha aumenta quadraticamente com a tensão.
+        \item A capacidade de transporte é inversamente proporcional à reatância da linha.
+        \item O valor máximo do trânsito de potência ativa ocorre para $\theta = \pm \pi/2$, que corresponde ao \underline{limite de estabilidade estática} da marcha síncrona dos dois geradores:
+        $$
+            C_s = \dfrac{\partial P}{\partial \theta} = P_\text{máx}\cos(\theta)
+        $$
+        Quando $\theta = \pm \pi/2$, o coeficiente anula-se, perdendo o sincronismo entre geradores.
+    \end{enumerate}
+\end{mdframed}
 
 %//==============================--@--==============================//%
+\subsubsection{Limite de Estabilidade da Tensão}
+\noindent Considere-se um sistema com dois barramentos ligados por uma linha, no qual um gerador ligado a um barramento alimenta uma carga ligado ao outro:
+
+\begin{figure}[H]
+    \centering
+    \begin{circuitikz}[scale=1.2]
+        \draw (7.5,12.7) to[sinusoidal voltage source, sources/symbol/rotate=auto] (7.5,12);
+        \draw [thick, -](6.5,11.5) to[short] (8.5,11.5);
+        \draw [thick, >=stealth,->](7.5,12) to[short] (7.5,11.5);
+        \draw [>=stealth,->](7,11.5) to[short] (7,10);
+         \node[yshift=-1mm,xshift=2mm,font=\normalsize] at (6.1,11.6) {$\mathbf{V}_1$};
+        
+        \draw [thick, -](10,11.5) to[short] (12,11.5);
+        \draw [>=stealth,->](11.5,11.5) to[short] (11.5,10) node[below,right, font=\normalsize] {$P_C + jQ_C$};
+         \node[yshift=-1mm,xshift=2mm,font=\normalsize] at (12,11.6) {$\mathbf{V}_2$};
+        
+        \draw [-](8,11.5) to[short] (8,11);
+        \draw [-](8,11) to[short] (10.5,11);
+        \draw [>=stealth,->](9.25,11) to[short] (9.3,11) node[below, font=\normalsize] {$\mathbf{I}$};
+        \draw [-](10.5,11.5) to[short] (10.5,11);
+    \end{circuitikz}
+\end{figure} 
+
+\vspace{-0.75em}
+\noindent Considerando fixa a tensão no barramento 1, a tensão no barramento 2 varia com a carga. Desprezando a admitância transversal da linha, tem-se:
+$$
+    \mathbf{V_1} = \mathbf{V_2} + (R_L + j X_L) \mathbf{I} 
+$$
+\noindent Sendo \(\mathbf{V}_1 = V_1 e^{j0}\) e \(\mathbf{V}_2 = V_2 e^{j\theta}\):
+$$
+    \mathbf{I} = \left(\frac{\mathbf{S}_C}{\mathbf{V}_2}\right)^* = \frac{P_C - jQ_C}{V_2 e^{j\theta}} 
+$$
+Substituindo na equação anterior, obtém-se:
+$$
+    V_1 = V_2 e^{-j\theta} + (R_L + jX_L) \frac{P_C - jQ_C}{V_2 e^{j\theta}}
+$$
+ou ainda:
+$$
+    V_1 V_2 e^{j\theta} = V_2^2 + (R_L + jX_L) (P_C - jQ_C) 
+$$
+Decompondo em parte real e imaginária, vem:
+$$
+\begin{aligned}
+    V_1 V_2 \cos \theta &= V_2^2 + R_L P_C + X_L Q_C  \\
+    V_1 V_2 \sin \theta &= X_L P_C - R_L Q_C 
+\end{aligned}
+$$
+Quadrando e somando estas equações, obtém-se a equação biquadrática:
+$$
+    V_2^4 + \underbrace{\Big[ 2 (R_L P_C + X_L Q_C) - V_1^2 \Big]}_{b} V_2^2 + \underbrace{(R_L^2 + X_L^2) (P_C^2 + Q_C^2)}_{c} = 0 
+$$
+Cuja solução é dada por:
+$$
+    V_2 = \sqrt{\frac{-b \pm \sqrt{b^2 - 4c}}{2}}\qquad 
+    \theta = \arcsin\left(\frac{X_L P_C - R_L Q_C}{V_1 V_2}\right)
+$$
+
+\noindent\begin{minipage}[c]{0.45\linewidth}
+    \noindent Para valores crescentes da potência d carga $P_C$, mantendo-se constante o fator de potência, a amplitude $V_2$ varia como apresentado. Observa-se o fenómeno do colapso de tensão quando a potência ativa da carga atinge um limite, a partir do qual o sistema se torna instável:
+
+    \begin{itemize}[leftmargin=*]
+        \item[$\rightarrow$] A ponta corresponde à potência máxima que pode ser fornecida à carga. Para além deste ponto, cargas adicionais provocam uma queda tanto na tensão como na potência (ilustrada a tracejado).
+    \end{itemize}
+
+    \noindent \textbf{Para f.p. $\pmb{=}$ 1:}
+    $$
+        \boxed{P_{max} = \frac{V_n^2}{2 X_L}}
+    $$
+
+    \noindent Este valor é metade do que prevalece quando a tensão é mantida no valor nominal em ambos os extremos da linha.
+\end{minipage}\hfill
+\begin{minipage}[c]{0.5\linewidth}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=1.4]
+        \begin{axis}[
+            xmin=0, xmax=1.1,
+            ymin=0, ymax=2,
+            axis lines=middle,
+            width=7cm,
+            height=7cm,
+            xtick={0,0.2,0.4,0.6,0.8,1}, 
+            ytick={1}, 
+            tick style={font=\tiny},
+            ytick align=outside, 
+            xtick align=outside,
+            ytick pos=left,
+            ticklabel style = {font=\tiny},
+            clip=false,
+            restrict x to domain=0:1,
+        ]
+    
+            \node[font=\scriptsize] at (-0.07,1.95) {$V_2$};
+            \node[font=\scriptsize] at (1.16,-0.05) {$P_C$};
+    
+            % Lengends
+            \draw[dotted, black] (axis cs:1,0) -- (axis cs:1,2);
+            \draw[->, black] (axis cs:0,1) -- (axis cs:1,1);
+            \node[yshift=1mm,xshift=0mm,font=\tiny] at (0.5,1) {Limite de Estabilidade};
+            \node[yshift=0mm,xshift=3.5mm,font=\tiny] at (1,1) {$P_{max}$};
+            
+            % Plot for PC curve
+            \addplot [black, domain=0:1,samples=200] ({-2*x^2 + 1},{x+1});
+            \addplot [gray,dashed, domain=0:1,samples=200] ({-2*x^2 + 1},{-x+1});
+        \end{axis}
+    \end{tikzpicture}
+\end{figure} 
+\end{minipage}
+%//==============================--@--==============================//%
+\clearpage
 \subsection{Parâmetros da Linha}
 
 As linhas elétricas são caracterizadas pela impedância longitudinal e admitância transversal, geralmente expressas em $\Omega$/km e S/km, respetivamente. Os modelos comuns consideram a resistência e a reactância longitudinais; a suscetância transversal é considerada em linhas longas, enquanto a condutância transversal é muitas vezes ignorada. 
@@ -211,7 +571,7 @@ As linhas elétricas são caracterizadas pela impedância longitudinal e admitâ
 \begin{mdframed}
     Ao contrário dos circuitos de parâmetros concentrados, estas linhas têm parâmetros distribuídos ao longo do seu comprimento, o que resulta num tempo de propagação não nulo para o campo eletromagnético, que viaja à velocidade da luz:
     $$
-        v = \frac{1}{\sqrt{LC}} = \frac{1}{\sqrt{\mu \varepsilon}} = \frac{1}{\sqrt{\mu_r \varepsilon_r}} \cdot c_0
+        \nu = \frac{1}{\sqrt{LC}} = \frac{1}{\sqrt{\mu \varepsilon}} = \frac{1}{\sqrt{\mu_r \varepsilon_r}} \cdot c_0
     $$
     onde $c_0 = 300'000$ km/s é a velocidade da luz no vácuo.
 \end{mdframed}
