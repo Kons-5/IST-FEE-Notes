@@ -1,0 +1,432 @@
+%//==============================--@--==============================//%
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+O \textit{Trânsito de Energia}\footnotemark[4] é a solução em regime estacionário de um sistema de energia elétrica, compreendendo os geradores, a rede e as cargas. Nos SEE, é preferível especificar as potências ativas e reativas fornecidas pelos geradores como variáveis de controlo, em vez das correntes injetadas, o que resulta num modelo muito simples para aqueles elementos. As tensões nos nós são as variáveis de estado, e as potências ativas e reativas de carga assumem o carácter de variáveis de perturbação.
+
+O número de nós (barramentos) e de ramos (linhas e transformadores) é muito elevado --- da ordem das centenas ou milhares --- para um sistema de grande porte e as equações que o modelam são não-lineares, o que exige o recurso a um método de cálculo \textit{potente}.
+
+\begin{mdframed}
+    O trânsito de energia compreende os seguintes passos:
+    \begin{enumerate}[label=\arabic*.,font=\small\bfseries]\small
+        \item \underline{Formulação de um modelo} matemático que represente com suficiente rigor o sistema físico real.
+        \item \underline{Especificação} do tipo de barramentos e das grandezas referentes a cada um.
+        \item \underline{Solução numérica das equações} do trânsito de energia, a qual fornece o valor das amplitudes e argumentos das tensões em todos os barramentos.
+        \item \underline{Cálculo das potências que transitam} em todos os ramos --- linhas e transformadores.
+    \end{enumerate}
+\end{mdframed}
+
+\footnotetext[4]{%
+    Também designado por \textit{Trânsito de Potência} ou \textit{Fluxo de Potência} (\textit{Power Flow} ou \textit{Load Flow}). 
+}
+\renewcommand{\thefootnote}{\arabic{footnote}}
+
+%//==============================--@--==============================//%
+\subsection[Sistema com $n$ barramentos]{Sistema com $\pmb{n}$ barramentos}
+
+Começamos por analisar o caso mais simples de um sistema com dois barramentos ligados por uma linha ($n=2$), que irá servir para introduzir as características do trânsito de energia.
+
+Cada barramento é alimentado por geradores que fornecem as potências complexas $\mathbf{S}_{G_1}$ e $\mathbf{S}_{G_2}$, respetivamente a cada barramento. A estes barramentos estão ligadas cargas que consomem $\mathbf{S}_{C_1}$ e $\mathbf{S}_{C_2}$. A linha de transmissão pode ser representada pelo equivalente em $\pi$, conforme apresentado na \hyperref[fig:transito-dois-barramentos]{Fig. X (b)}.
+
+\vspace{0.5em}
+\begin{figure}[H]
+    \ctikzset{bipoles/length=1.2cm}
+    \tikzset{
+        line/.style = {line width=1pt, draw=black},
+        shin/.style = {line, line width=2pt},
+        net node/.style = {circle, draw=black,line width=1.2pt,minimum width=0.8cm, inner sep=0pt, outer 
+        sep=0pt},
+    }
+
+    \centering
+    \begin{subfigure}[b]{0.45\linewidth}
+        \centering
+        \begin{circuitikz}
+            \draw (7.5,12.7) to[sinusoidal voltage source, sources/symbol/rotate=auto] (7.5,12) node[yshift=3mm,xshift=15mm,font=\tiny] {$\;\;\mathbf{S}_{G1} = P_{G1} + jQ_{G1}$};
+            \path [shin] (6.5,11.5) -- (8.5,11.5);
+            \draw [thick, >=stealth,->](7.5,12) to[short] (7.5,11.5);
+            \draw [>=stealth,->](7,11.5) to[short] (7,10) node[right, font=\tiny] {$\mathbf{S}_{C1} = P_{C1} + jQ_{C1}$};
+             \node[yshift=-1mm,xshift=2mm,font=\tiny] at (6.1,11.6) {$V_1$};
+            
+            \draw (11,12.7) to[sinusoidal voltage source, sources/symbol/rotate=auto ] (11,12) node[yshift=3mm,xshift=15mm,font=\tiny] {$\;\;\mathbf{S}_{G2} = P_{G2} + jQ_{G2}$};
+            \path [shin] (10,11.5) -- (12,11.5);
+            \draw [thick, >=stealth,->](11,12) to[short] (11,11.5);
+            \draw [>=stealth,->](11.5,11.5) to[short] (11.5,10) node[right, font=\tiny] {$\mathbf{S}_{C2} = P_{C2} + jQ_{C2}$};
+             \node[yshift=-1mm,xshift=2mm,font=\tiny] at (12,11.6) {$V_2$};
+            
+            \draw [-](8,11.5) to[short] (8,11);
+            \draw [-](8,11) to[short] (10.5,11);
+            \draw [>=stealth,->](9.25,11) to[short] (9.3,11) node[below, font=\tiny] {Linha};
+            \draw [-](10.5,11.5) to[short] (10.5,11);
+        \end{circuitikz}
+
+        \caption{Esquema unifilar}
+    \end{subfigure}\hfill
+    \begin{subfigure}[b]{0.45\linewidth}
+        \centering
+        \begin{circuitikz}
+            \ctikzset{resistors/scale=0.7}
+            
+            %% Esquema equivalente monofásico
+            \path [shin] (1,0.5) -- (2.5,0.5);
+            \path [shin] (6.5,0.5) -- (8,0.5);
+            
+            % Gerador ficticio
+            \draw (1.75,1.7) to[esource] (1.75,1) node[yshift=3mm,xshift=15mm,font=\tiny] {$\,\mathbf{S}_{1} =\mathbf{S}_{G1} - \mathbf{S}_{C1}$};
+            \fill[pattern={north west lines}, pattern color=black] (1.75,1.35) circle (0.35cm);
+            
+            \draw (7.25,1.7) to[esource] (7.25,1) node[yshift=3mm,xshift=15mm,font=\tiny] {$\,\mathbf{S}_{2} =\mathbf{S}_{G2} - \mathbf{S}_{C2}$};
+            \fill[pattern={north west lines}, pattern color=black] (7.25,1.35) circle (0.35cm);
+            
+            % Setas do gerador ficticio
+            \draw [thick, >=stealth,->](1.75,1) to[short] (1.75,0.5);
+            \draw [thick, >=stealth,->](7.25,1) to[short] (7.25,0.5);
+            
+            \draw (2,0) 
+                to[short, -] (2,0)
+                to[generic, l=$\mathbf{Z}_L$] (7,0)
+                to[short, -] (7,0);
+            
+            \draw (2,0.5) to[generic, l=$\displaystyle \frac{\mathbf{Y}_T}{2}$] (2,-1.75);
+            \draw (7,0.5) to[generic, l_=$\displaystyle \frac{\mathbf{Y}_T}{2}$] (7,-1.75);
+            \draw[dashed] (1.25,-1.75) -- (7.75,-1.75);
+        \end{circuitikz}
+
+        \caption{Esquema monofásico equivalente}
+    \end{subfigure}
+
+    \caption{Sistema com dois barramentos}
+    \label{fig:transito-dois-barramentos}
+\end{figure}
+
+\noindent Definimos a \textit{potência injetada} $\mathbf{S}$ como a diferença entre as potências gerada e consumida em cada barramento. Para este exemplo temos:
+$$
+    \begin{aligned}
+        \mathbf{S}_1 &= P_1 + jQ_1 = (P_{G_1} - P_{C_1}) + j(Q_{G_1} - Q_{C_1})\\
+        \mathbf{S}_2 &= P_2 + jQ_2 = (P_{G_2} - P_{C_2}) + j(Q_{G_2} - Q_{C_2})
+    \end{aligned}
+$$
+Conclui-se que se num dado barramento a geração for superior à carga, a potência injetada será positiva; o oposto ocorre na situação inversa. Os geradores fictícios que entregam as potências injetadas nos barramentos são representados na \hyperref[fig:transito-dois-barramentos]{Fig. X (b)} por círculos sombreados.
+
+%//==============================--@--==============================//%
+\vspace{0.5em}\hrule\vspace{0.5em}
+\noindent A corrente injectada num barramento \( \mathbf{I} \) está relacionada com a potência injetada pela equação:
+$$
+    \mathbf{I} = \frac{\mathbf{S}^*}{\mathbf{V}^*} = \frac{P - jQ}{\mathbf{V}^*}
+$$
+
+\noindent A aplicação da primeira lei de Kirchhoff aos barramentos 1 e 2 conduz às equações nodais:
+$$
+    \begin{aligned}
+        \mathbf{I}_1 &= \frac{\mathbf{S}_1^*}{V_1^*} = \frac{\mathbf{Y}_T}{2} \mathbf{V}_1 + \frac{1}{\mathbf{Z}_L} (\mathbf{V}_1 - \mathbf{V}_2) \\
+        \mathbf{I}_2 &= \frac{\mathbf{S}_2^*}{\mathbf{V}_2^*} = \frac{\mathbf{Y}_T}{2} \mathbf{V}_2 + \frac{1}{\mathbf{Z}_L} (\mathbf{V}_2 - \mathbf{V}_1)      
+    \end{aligned}
+    \qquad\rightarrow\qquad
+    \boxed{\begin{aligned}
+        \frac{\mathbf{S}_1^*}{\mathbf{V}_1^*} = \mathbf{y}_{11} \mathbf{V}_1 + \mathbf{y}_{12} \mathbf{V}_2\\
+        \frac{\mathbf{S}_2^*}{\mathbf{V}_2^*} = \mathbf{y}_{21} \mathbf{V}_1 + \mathbf{y}_{22} \mathbf{V}_2
+    \end{aligned}}
+$$
+
+\begin{mdframed}
+    Podemos assim definir a \textit{matriz das admitâncias nodais}:
+    $$
+    \left\{
+    \begin{aligned}
+        y_{11} &= \frac{Y_T}{2} + \frac{1}{Z_L}\\
+        y_{12} &= y_{21} = -\frac{1}{Z_L}\\
+        y_{22} &= \frac{Y_T}{2} + \frac{1}{Z_L}
+    \end{aligned}
+    \right.\quad\xrightarrow{}\quad
+    \begin{bmatrix}
+        \mathbf{Y}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        y_{11} & y_{12} \\[6pt]
+        y_{21} & y_{22}
+    \end{bmatrix}
+    $$
+    Sob a forma matricial, as equações nodais escrevem-se:
+    $$
+    \begin{bmatrix}
+        \dfrac{\mathbf{S}^*}{\mathbf{V}^*}
+    \end{bmatrix} =
+    \begin{bmatrix}
+        \mathbf{Y}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \mathbf{V}
+    \end{bmatrix}
+    $$
+    Note-se que estas equações relacionam tensões e potências (e não correntes), o que as torna não lineares, uma alternativa será:
+    $$
+    \begin{bmatrix}
+        \mathbf{V}
+    \end{bmatrix} =
+    \begin{bmatrix}
+        \mathbf{Z}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \dfrac{\mathbf{S}^*}{\mathbf{V}^*}
+    \end{bmatrix}
+    \qquad\qquad
+    \begin{bmatrix}
+        \mathbf{Y}
+    \end{bmatrix}^{-1} = 
+    \begin{bmatrix}
+        \mathbf{Z}
+    \end{bmatrix}
+    $$
+    onde $[\mathbf{Z}]$ é a \textit{matriz das impedâncias nodais}.
+\end{mdframed}
+
+\noindent Em notação compacta, $\mathbf{S}_i^*$, pode ser reescrito como:
+$$
+    \mathbf{S}_i^* = P_i - jQ_i = \mathbf{V}_i^*\sum_{j = 1}^2 \mathbf{y}_{ij} \mathbf{V}_j,\quad i = 1,2
+$$
+%//==============================--@--==============================//%
+\vspace{0.5em}\hrule\vspace{0.5em}
+\noindent As equações do trânsito de energia escrevem-se também na forma real, cabendo a cada barramento duas equações. Normalmente, exprime-se a tensão em notação polar e a admitância complexa em notação retangular:
+$$
+    \mathbf{V}_i = V_i e^{j\theta_i}\qquad
+    \mathbf{y}_{ij} = G_{ij} + j B_{ij}
+$$
+onde $G_{ij}$ e $B_{ij}$ são a condutância e a suscetância nodais, respetivamente. Por substituição na fórmula de notação compacta obtemos:
+$$
+    P_i - jQ_i = \sum_{j = 1}^2 \left(G_{ij} + j B_{ij}\right)\, V_iV_je^{(\theta_j - \theta_i)},\quad i = 1,2
+$$
+Decompondo nas partes real e imaginária:
+\begin{mdframed}
+    $$
+        \begin{aligned}
+            P_i = P_{Gi} - P_{Ci} = \sum_{j=1}^{2} V_i V_j\, \Big[G_{ij} \cos(\theta_i - \theta_j) + B_{ij} \sin(\theta_i - \theta_j)\Big], \quad &i = 1,2\\
+            Q_i = Q_{Gi} - Q_{Ci} = \sum_{j=1}^{2} V_i V_j\, \Big[G_{ij} \sin(\theta_i - \theta_j) - B_{ij} \cos(\theta_i - \theta_j)\Big], \quad &i = 1,2
+        \end{aligned}
+    $$
+\end{mdframed}
+%//==============================--@--==============================//%
+\subsubsection{Característica das equações}
+As equações do trânsito de energia exibem as seguintes características:
+
+\begin{itemize}
+    \item As equações são algébricas, porque modelam matematicamente o sistema em regime estacionário\footnote{Se se tratasse de um regime dinâmico, teríamos equações diferenciais.}.
+    
+    \item As equações são não-lineares, o que torna impossível uma solução por via analítica. Usando um computador digital, pode no entanto obter-se uma solução numérica.
+\end{itemize}
+
+\noindent As equações do balanço de potência ativa e das respetivas perdas $P_L$ são dadas por:
+$$
+    P_{G1} + P_{G2} = P_{C1} + P_{C2} + P_L
+$$
+$$
+    P_L = (V_1^2 + V_2^2) G_{11} + 2 V_1 V_2 G_{12} \cos(\theta_1 - \theta_2)
+$$
+\noindent De forma análoga obtemos equação de balanço de potência reativa e as respetivas perdas $Q_L$:
+$$
+    Q_{G1} + Q_{G2} = Q_{C1} + Q_{C2} + Q_L
+$$
+$$
+    Q_L = - (V_1^2 + V_2^2) B_{11} - 2 V_1 V_2 B_{12} \cos(\theta_1 - \theta_2)
+$$
+
+\noindent As perdas são função dos módulos e argumentos das tensões.
+
+\noindent Para o sistema em estudo existem 12 variáveis: quatro potências activas \(P_{G1}\), \(P_{C1}\), \(P_{G2}\) e \(P_{C2}\), quatro potências reactivas \(Q_{G1}\), \(Q_{C1}\), \(Q_{G2}\) e \(Q_{C2}\), das tensões \(V_1\) e \(V_2\) e dois argumentos \(\theta_1\) e \(\theta_2\). Por conseguinte, temos que especificar oito destas variáveis, restando quatro incógnitas que podem ser obtidas por solução das quatro equações do trânsito de energia de que dispomos. Contudo, a solução do trânsito de energia é limitada por dois obstáculos:
+
+\begin{enumerate}
+    \item Não é possível especificar as potências geradas nos dois barramentos, uma vez que não se conhecem as perdas, que são função das incógnitas.
+    
+    \item Não é possível calcular os valores de \(\theta_1\) e \(\theta_2\), somente a sua diferença \(\theta_1 - \theta_2\).
+\end{enumerate}
+
+\begin{mdframed}
+    A solução do problema requer agora os seguintes passos:
+    \begin{enumerate}
+        \item Conhecer ou estimar as cargas activas e reactivas impostas pelos consumidores.
+        
+        \item Especificar a tensão e o argumento no barramento 1 (normalmente toma-se \(\theta_1 = 0\)), que passa a desempenhar o papel de barramento de referência, bem como as potências activa e reactiva geradas no barramento 2.
+        
+        \item Resolver as equações do trânsito de energia para obter a tensão e o argumento no barramento 2 e as gerações activa e reactiva no barramento 1, que assume assim também o papel de barramento de \textit{balanço}\footnote{Porque permite fechar o balanço energético do sistema: geração = carga + perdas.}.
+    \end{enumerate}
+\end{mdframed}
+
+%//==============================--@--==============================//%
+\subsubsection{Modelo Matemático}
+
+A generalização das equações do trânsito de energia para um sistema com $n$ barramentos é trivial. Considere-se o barramento genérico $i$ do sistema, por definição, a potência injetada $\mathbf{S}_i = P_i + jQ_i$ é dada por
+$$
+    \mathbf{S}_i = \mathbf{S}_{G_i} - \mathbf{S}_{C_i} = (P_{G_i} - P_{C_i}) + j(Q_{G_i} - Q_{C_i})
+$$
+Representando a linha $k$, ligada entre os nós $i$ e $j$ pelo esquema equivalente em $\pi$, a aplicação da KCL ao barramento $i$ resulta em:
+$$
+    \mathbf{I}_i = \frac{\mathbf{S}^{*}_i}{\mathbf{V}^{*}_i} = \mathbf{y}_{ii} \mathbf{V}_i + \sum_{{j = 1}\atop{j \neq i}}^{n} \mathbf{y}_{ij} \mathbf{V}_j = \sum_{j = 1}^{n} \mathbf{y}_{ij} \mathbf{V}_j
+$$
+onde 
+$$
+    \begin{aligned}
+        \mathbf{y}_{ii} &= \sum_{{j = 1}\atop{j \neq i}}^{n} \left( \frac{(\mathbf{Y}_T)_k}{2} + \frac{1}{(\mathbf{Z}_L)_k} \right)  \\
+        \mathbf{y}_{ij} &= \mathbf{y}_{ji} = -\frac{1}{(\mathbf{Z}_L)_k}
+    \end{aligned}
+$$
+A matriz das admitâncias nodais possui dimensão $n \times n$:
+$$
+    [\mathbf{Y}] =
+    \begin{bmatrix}
+        \mathbf{y}_{11} & \dots & \mathbf{y}_{1n} \\
+        \vdots & \ddots & \vdots \\
+        \mathbf{y}_{n1} & \dots & \mathbf{y}_{nn} \\
+    \end{bmatrix}
+$$
+Esta matriz é simétrica e complexa no caso geral, podendo ser decomposta em:
+$$
+    [\mathbf{Y}] = [\mathbf{G}] + j[\mathbf{B}]
+$$
+onde $[\mathbf{G}]$ e $[\mathbf{B}]$ são a matriz de condutâncias nodais e matriz de suscetâncias nodais, respetivamente.
+
+O elemento diagonal $\mathbf{y}_{ii}$ é dado pela soma das admitâncias de todos os ramos ligados ao nó $i$ (este valor é sempre diferente de zero), enquanto a elemento não diagonal $\mathbf{y}_{ij}$ $(i \neq j)$ é dado pelo simétrico da admitância do ramo que liga os nós $i$ e $j$ (o valor é nulo caso não estejam ligados). Note-se que esta é uma matriz esparsa, uma vez que numa rede elétrica cada nó só está ligado àqueles que lhe são vizinhos.
+
+\vspace{0.5em}
+\noindent Massajando a expressão da corrente injetada, obtemos:
+$$
+    \mathbf{S}^*_i = P_i - jQ_i = \mathbf{V}_i^* \sum_{j = 1}^{n} \mathbf{y}_{ij} \mathbf{V}_j,\quad i = 1,\dots,n
+$$
+Esta é a forma complexa das equações do trânsito de energia, em número igual ao de barramentos da rede. 
+
+\noindent As equações do trânsito de energia escrevem-se na forma real e resultam então num conjunto de $2n$ equações que exprimem o balanço de energia ativa e reativa:
+$$
+    \begin{aligned}
+        P_i = P_{G_i} - P_{C_i} = \sum_{j=1}^{n} V_i V_j\, \Big[G_{ij} \sin(\theta_i - \theta_j) - B_{ij} \cos(\theta_i - \theta_j)\Big], \quad &i = 1,\dots,n \\
+        Q_i = Q_{G_i} - Q_{C_i} = \sum_{j=1}^{n} V_i V_j\, \Big[G_{ij} \sin(\theta_i - \theta_j) - B_{ij} \cos(\theta_i - \theta_j)\Big], \quad &i = 1,\dots,n
+    \end{aligned} 
+$$
+
+%//==============================--@--==============================//%
+\subsection{Solução do Trânsito de Energia}
+
+%
+\subsubsection{Cálculo das Tensões}
+
+O primeiro passo é o cálculo das tensões nos barramentos. Dada a não-linearidade das equações do trânsito de energia, a solução tem de ser numérica, com base num método iterativo. Utiliza-se normalmente:
+
+\begin{enumerate}
+    \item Método de Gauss-Seidel.
+    \item Método de Newton-Raphson.
+    \item Método do Desacoplamento.
+\end{enumerate}
+
+\noindent Nos métodos computacionais, independentemente do escolhido, tudo começa com uma estimativa inicial das tensões nos barramentos. A partir desta, é feita uma correção para que se aproxime mais da solução final.
+
+Após a primeira iteração, o processo é repetido até que as amplitudes das tensões atinjam a precisão desejada. Se o método for convergente, cada iteração aprimora a solução. No entanto, há situações em que o método pode não levar a uma solução.
+
+%
+\subsubsection{Potência Injetada no Nó de Balanço}
+
+Uma vez obtida a convergência das tensões, é possível calcular a potência injectada no barramento de balanço. Para isso, utiliza-se a equação seguinte, que é excluída do processo iterativo de cálculo das tensões, uma vez que é especificada a tensão no nó de balanço:
+$$
+    P_1 - jQ_1 = \mathbf{V}_1^* \sum_{j=1}^{n} \mathbf{y}_{1j} V_j
+$$
+Se existirem múltiplos barramentos de balanço, então é preciso calcular a potência complexa injetada em cada um, utilizando as respetivas equações de trânsito de energia.
+
+%
+\subsubsection{Potência Transitada nas Linhas}
+\label{subsubsec:potencia-transitada}
+
+Finalmente, é necessário calcular os trânsitos de potência activa e reactiva nas linhas. A potência complexa \( \mathbf{S}^k_{ij} \) que transita na linha \( k \), ligada entre os nós \( i \) e \( j \), medida no nó \( i \) e definida como positiva na direcção \( i \rightarrow j \), é dada por:
+$$
+    \mathbf{S}^k_{ij} = P^k_{ij} + j Q^k_{ij} = \mathbf{V}_i (\mathbf{I}^k_{ij})^* = \left( \frac{1}{\mathbf{Z}^*_{L_k}} + \frac{\mathbf{Y}^*_{T_k}}{2} \right) V^2_i - \frac{1}{\mathbf{Z}^*_{L_k}} \mathbf{V}_i \mathbf{V}^*_j
+$$
+Analogamente, a potência complexa no extremo da linha ligado ao nó \( j \), definida como positiva na direcção \( j \rightarrow i \), é dada por:
+$$
+    \mathbf{S}^k_{ji} = P^k_{ji} + j Q^k_{ji} = \mathbf{V}_j (\mathbf{I}^k_{ji})^* = \left( \frac{1}{\mathbf{Z}^*_{L_k}} + \frac{\mathbf{Y}^*_{T_k}}{2} \right) V^2_j - \frac{1}{\mathbf{Z}^*_{L_k}} \mathbf{V}_i \mathbf{V}^*_j
+$$
+onde:
+$$
+    \begin{aligned}
+        \mathbf{Z}_{L_k} &= R_k + jX_k  \\
+        \mathbf{Y}_{T_k} &= j\omega C_k 
+    \end{aligned}
+$$
+\( R_k \), \( X_k \) e \( C_k \) são, respetivamente, a resistência, a reactância e a capacitância \underline{totais} da linha.
+
+\vspace{0.5em}
+\noindent Definindo:
+$$
+    G_k = \text{Re} \left( \frac{1}{\mathbf{Z}_{L_k}} \right) = \frac{R_k}{R^2_k + X^2_k} 
+    \qquad\;
+    B_k = \text{Im} \left( \frac{1}{\mathbf{Z}_{L_k}} \right) = -\frac{X_k}{R^2_k + X^2_k} 
+    \qquad\;
+    B'_k = \text{Im} \left( \frac{\mathbf{Y}_{T_k}}{2} \right) = \frac{\omega C_k}{2}
+$$
+e somando $\mathbf{S}^k_{ij}$ e $\mathbf{S}^k_{ji}$, obtêm-se as perdas de potência ativa $P_L$ e reativa $Q_L$ na linha:
+$$
+    \mathbf{S}^k_{ij} + \mathbf{S}^k_{ji} = \underbrace{(P^k_{ij} + P^k_{ji})}_{P_L} + j\underbrace{(Q^k_{ij} + Q^k_{ji})}_{Q_L}
+    \quad\implies\quad
+    \left\{\begin{aligned}
+        P_L &= G_k [V^2_i + V^2_j - 2 V_i V_j \cos (\theta_i - \theta_j)] \\
+        Q_L &= -(B_k + B'_k) (V^2_i + V^2_j) + 2 B_k V_i V_j \cos (\theta_i - \theta_j)
+    \end{aligned}\right.  
+$$
+
+%//==============================--@--==============================//%
+\subsection{Modelo de Corrente Contínua}
+
+Em estudos de planeamento, que requerem um elevado número de trânsitos de energia, usa-se por vezes um modelo simplificado do sistema de energia eléctrica, designado por \textit{modelo de corrente contínua} (\textit{D.C. Load Flow}), que dispensa o recurso a métodos iterativos. Trata-se de um modelo linearizado que permite calcular um valor aproximado dos trânsitos de potência activa na rede, baseando-se nas seguintes hipóteses simplificativas:
+
+\begin{enumerate}
+    \item Toma-se a amplitude de \underline{tensão igual a 1,0 p.u.} em todos os barramentos.
+    \item Não se considera o trânsito de potência reactiva.
+    \item Consideram-se nulas a resistência e a admitância transversal dos ramos.
+    \item Admite-se que a diferença entre os argumentos das tensões nos barramentos de ligação de cada ramo é pequena, donde:
+    $$
+        \begin{aligned}
+            \cos(\theta_i - \theta_j) &\approx 1 \\
+            \sin(\theta_i - \theta_j) &\approx \theta_i - \theta_j
+        \end{aligned}
+    $$
+\end{enumerate}
+
+\noindent Uma vez que se desprezam a resistência e a admitância transversal dos ramos, a matriz das condutâncias nodais é nula, e os elementos da matriz das suscetâncias nodais são dados por:
+$$
+\begin{aligned}
+    B_{ij} &= - \left( \frac{1}{X_{i1}} + \dots + \frac{1}{X_{in}} \right) & \quad \text{se } i = j \\
+    B_{ij} &= \frac{1}{X_{ij}} & \quad \text{se } i \neq j
+\end{aligned}
+$$
+Donde:
+$$
+    \sum_{j=1}^{n} B_{ij} = 0
+$$
+O número de nós da rede determina os elementos da matriz de susceptâncias. Os elementos da diagonal principal são iguais à soma das susceptâncias ligadas ao barramento. Note-se que a susceptância dos elementos indutivos é negativa; os elementos fora da diagonal principal são o simétrico da susceptância que liga os barramentos. É importante ressaltar que, no caso de elementos indutivos, esta susceptância é positiva.
+
+\vspace{0.5em}\hrule\vspace{0.5em}
+
+\noindent As equações do trânsito de energia escrevem-se então:
+$$
+\begin{aligned}
+    P_i &= \sum_{j=1}^{n} V_i V_j [G_{ij} \cos(\theta_i - \theta_j) + B_{ij} \sin(\theta_i - \theta_j)] \\
+    &\approx \sum_{j=1}^{n} B_{ij} (\theta_i - \theta_j) = \theta_i \sum_{j=1}^{n} B_{ij} - \sum_{j=1}^{n} B_{ij} \theta_j = - \sum_{j=1}^{n} B_{ij} \theta_j  \\
+    Q_i &= \sum_{j=1}^{n} V_i V_j [G_{ij} \sin(\theta_i - \theta_j) + B_{ij} \cos(\theta_i - \theta_j)] \\
+    &\approx \sum_{j=1}^{n} -B_{ij} = 0
+\end{aligned}
+$$
+Em notação matricial:
+$$
+    [P] = [B'] [\theta] \;\iff\; [\theta] = [B']^{-1} [P]
+$$
+onde $[B']$ representa a matriz das suscetâncias nodais \underline{negada} (i.e., $[B'] = -[B]$), $[P]$ o vetor das potências injetadas e $[\theta]$ o vetor dos argumentos das tensões. Note-se que a matriz $[B]$ não inclui a linha e a coluna correspondentes ao nó de balanço (caso contrário seria uma matriz singular, i.e., não teria inversa).
+
+\vspace{0.5em}\hrule\vspace{0.5em}
+
+\noindent Nestes moldes, a \underline{potência ativa transitada} no ramo \( i - j \) é dada por:
+$$
+    \begin{aligned}
+        P_{ij} &= B_{ij} V_i V_j \sin(\theta_i - \theta_j) = \frac{V_i V_j}{X_{ij}} \sin(\theta_i - \theta_j) \\
+        &\approx B_{ij} (\theta_i - \theta_j) = \frac{1}{X_{ij}} (\theta_i - \theta_j)
+    \end{aligned}
+$$
+Este modelo é análogo ao de uma rede em corrente contínua se se interpretar \( P \) como a corrente, \( \theta \) como a tensão e \( X \) como a resistência. Uma vez que não é considerada a resistência dos ramos, o modelo conduz a perdas nulas na rede. Podemos mitigar isto através de uma aproximação. As perdas no ramo \( i - j \) calculam-se fazendo \( V_i = V_j = 1,0 \) p.u., de onde vem (\hyperref[subsubsec:potencia-transitada]{vista a dedução acima}):
+$$
+    P_{Lij} = 2G_{ij} [1 - \cos(\theta_i - \theta_j)]
+$$
+
+%//==============================--@--==============================//%
